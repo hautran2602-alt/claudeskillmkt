@@ -1,0 +1,41 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-debug.log*
+
+# Credentials — NEVER commit
+.env
+.env.local
+*.fbtoken.json
+.fbtoken*
+tokens.json
+credentials.json
+*.secret
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Debug / runtime
+*.log
+debug-data/
+relay.log
+.reload-signal.json
+
+# Local plans / scratchpad
+plans/
+scratch/
+TODO.local.md

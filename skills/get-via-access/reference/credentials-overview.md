@@ -9,9 +9,9 @@ campaigns.
 
 | Credential | Bắt buộc | Nguồn lấy | Ghi chú |
 |---|---|---|---|
-| `access_token` (EAA) | ✅ | Trang FB đang login (xem extraction-sources.md) | Hết hạn → rotate |
+| `access_token` (EAA) | ✅ | BG-fetch HTML business.facebook.com → regex | Hết hạn → rotate |
 | Spoof headers | ✅ (trong extension) | `dnr-rules.json` | Bypass CORS |
-| `user_id` | ⚠️ cần cho `/me/*` | Từ `/me` hoặc cookie `c_user` | Là numeric string |
+| `user_id` | ⚠️ cần cho `/me/*` | Cookie `c_user` (qua `chrome.cookies.get`) | Là numeric string |
 | `ad_account_id` (`act_X`) | ⚠️ cần cho TKQC queries | Từ `/me/adaccounts` | Format `act_123...` |
 | `business_id` | ⚠️ cần cho BM queries | Từ `/me/businesses` | Format numeric |
 | App Secret + `appsecret_proof` | ⚡ tùy chọn | FB Developer Console | CHỈ server-to-server |
@@ -23,16 +23,16 @@ FB có thể đổi bất kỳ lúc nào → tool cần error-handling tốt.
 
 | Credential | Bắt buộc | Nguồn lấy | Ghi chú |
 |---|---|---|---|
-| `fb_dtsg` | ✅ | `require('DTSGInitData').token` hoặc regex script | CSRF token |
-| `jazoest` | ✅ | Derive từ `fb_dtsg` | Xem compute-jazoest.js |
-| `lsd` | ✅ | `require('LSD').token` hoặc regex `"LSD"..."token":"X"` | Session login state |
-| `c_user` cookie | ✅ | `document.cookie` | User ID numeric |
-| `xs` cookie | ✅ | `document.cookie` | Session signature |
-| `datr` cookie | ⚠️ nên có | `document.cookie` | Browser fingerprint, anti-bot |
-| `sb` cookie | ⚠️ nên có | `document.cookie` | Secure browser cookie |
-| `User-Agent` | ⚠️ nên có | `navigator.userAgent` | Mimic browser thật |
+| `fb_dtsg` | ✅ | Regex HTML: `"DTSGInitialData"..."token":"X"` | CSRF token |
+| `jazoest` | ✅ | Compute local từ `fb_dtsg` | Xem compute-jazoest.js |
+| `lsd` | ✅ | Regex HTML: `"LSD",[],{"token":"X"}` | Session login state |
+| `c_user` cookie | ✅ | `chrome.cookies.get({url,name:'c_user'})` | User ID numeric |
+| `xs` cookie | ✅ | `chrome.cookies.get({url,name:'xs'})` | Session signature |
+| `datr` cookie | ⚠️ nên có | `chrome.cookies.get` | Browser fingerprint, anti-bot |
+| `sb` cookie | ⚠️ nên có | `chrome.cookies.get` | Secure browser cookie |
+| `User-Agent` | ⚠️ nên có | `navigator.userAgent` trong background | Mimic browser thật |
 | `x-fb-friendly-name` | ⚠️ GraphQL | Tên operation | Route GraphQL request |
-| `x-asbd-id` | ⚠️ mới | Từ response FB | Anti-scraping layer 2024+ |
+| `x-asbd-id` | ⚠️ mới | Static `129477` hoặc từ response | Anti-scraping layer 2024+ |
 
 ## Token EAA — Format & Prefix
 

@@ -8,165 +8,131 @@ description: |
   "extract EAA token", "fb_dtsg", "jazoest", "lsd token", "check token còn sống",
   "token FB hết hạn", "spoof header FB", "gọi Graph API", "gọi internal FB endpoint",
   "làm tool cho nick Facebook", "đăng bài FB tự động", "xoá ads hàng loạt",
-  "export insights FB". Also use whenever building MV3 Chrome extensions, Puppeteer
-  or Playwright scripts, or any tool that calls https://graph.facebook.com OR any
-  internal /api/graphql/ / /ajax/ endpoint on behalf of a logged-in FB user.
+  "export insights FB". Also use whenever building MV3 Chrome extensions that need
+  to call https://graph.facebook.com OR any internal /api/graphql/ / /ajax/ endpoint
+  on behalf of a logged-in FB user.
 ---
 
-# get-via-access — Lấy bundle credentials Facebook để gọi mọi API
+# get-via-access — Lấy bundle credentials Facebook KHÔNG cần mở tab FB
 
-Skill này dạy Claude cách lấy **đầy đủ thông tin xác thực** từ 1 phiên FB đang đăng
-nhập, đủ để gọi cả **Graph API chính thức** lẫn **internal endpoints** (GraphQL,
-AJAX, export report) mà FB dùng nội bộ.
+Skill này dạy Claude cách lấy **đầy đủ thông tin xác thực** từ 1 Chrome profile đã
+login FB, đủ để gọi cả **Graph API chính thức** lẫn **internal endpoints**
+(GraphQL, AJAX, export report) — **mà user không cần mở bất kỳ tab FB nào**.
 
-## 📌 Khi nào dùng skill này
+## ⚡ Nguyên tắc số 1 — BG-FETCH FIRST
 
-Dùng ngay khi user hỏi/yêu cầu bất kỳ tác vụ nào sau:
+> **Luôn** ưu tiên cơ chế **background-fetch** trong service worker. Chỉ fallback
+> sang content-script MAIN-world nếu BG-fetch thất bại (rất hiếm).
 
-- Trích xuất `access_token` EAA từ trang Facebook đang login
-- Lấy `fb_dtsg`, `jazoest`, `lsd` để gọi endpoint nội bộ
-- Lấy cookies (`c_user`, `xs`, `datr`) để giả lập browser session
-- Kiểm tra token còn live / hết hạn
-- Tạo Chrome Extension MV3 cần gọi `graph.facebook.com`
-- Setup Puppeteer/Playwright để automate FB
-- Gặp error code 190 / 102 / 463 → rotate credentials
-- Cần spoof header `origin` / `referer` / `sec-fetch-site` để bypass CORS
+Lý do: Chrome extension có `host_permissions` cho `*.facebook.com` → `fetch()`
+trong background tự động gửi kèm cookies FB của user (nếu user đã login 1 lần
+bất kỳ) → FB trả HTML chứa **tất cả** credentials → regex extract.
 
-Nếu user chỉ muốn **gọi Graph API** (list TKQC, billing, insights) → chỉ cần
-`access_token` + spoof headers.
-
-Nếu user muốn **mass action, export, GraphQL** → cần full bundle
-(`fb_dtsg` + `jazoest` + `lsd` + cookies).
-
-## 🏗️ Kiến trúc chọn mặc định
-
-### Trong Chrome Extension MV3 (khuyến nghị cho tool cá nhân):
-
-```
-┌──────────────────────┐   postMessage    ┌──────────────────────┐
-│  content-hook.js     │ ───────────────▶ │  content-bridge.js   │
-│  (MAIN world)        │                  │  (ISOLATED world)    │
-│  - Đọc require()     │ ◀─────────────── │  - Listen chrome.rt  │
-│  - Scan <script>     │                  │  - Relay lên bg      │
-│  - Extract từ HTML   │                  └──────────┬───────────┘
-│  - Lấy cookies       │                             │
-└──────────────────────┘                             │ chrome.runtime.sendMessage
-                                                     ▼
-                                           ┌──────────────────────┐
-                                           │  background.js       │
-                                           │  - DNR spoof header  │
-                                           │  - Gọi Graph API     │
-                                           │  - Lưu bundle        │
-                                           └──────────────────────┘
-```
-
-### Trong Puppeteer/Node (automate server-side):
-
-```
-puppeteer-extract.js
-  ├─ launch Chrome với userDataDir của user
-  ├─ navigate → adsmanager.facebook.com
-  ├─ page.evaluate(content-hook logic)
-  └─ return { access_token, fb_dtsg, jazoest, lsd, cookies }
-```
+**User experience chuẩn:** cài extension → click icon → thấy full bundle. Không
+cần navigate, không cần content script, không cần mở tab FB.
 
 ## 🧭 Quy trình khuyến nghị — làm tool FB mới
 
-Mỗi khi user nhờ làm tool FB, **luôn** đi theo thứ tự:
+### Bước 1 — Copy 2 template cốt lõi vào project
+| Template | Đích | Vai trò |
+|---|---|---|
+| `templates/bg-fetch-credentials.js` | `src/background/get-creds.js` | **PRIMARY** — fetch + extract |
+| `templates/manifest-template.json` | `manifest.json` (merge) | Permissions + DNR config |
+| `templates/dnr-rules.json` | `src/dnr-rules.json` | Spoof origin/referer |
+| `templates/compute-jazoest.js` | `src/lib/compute-jazoest.js` | (Đã inline trong bg-fetch, chỉ dùng khi cần export riêng) |
+| `templates/validate-token.js` | `src/lib/validate-token.js` | Health check Graph API |
+| `templates/build-internal-headers.js` | `src/lib/internal.js` | Gen headers cho /api/graphql/ |
 
-1. **Copy templates** vào project mới
-   - MV3 extension → copy `content-hook.js`, `content-bridge.js`, `dnr-rules.json`
-   - Node → copy `puppeteer-extract.js`
+### Bước 2 — Merge manifest
+Sao chép key từ `manifest-template.json` vào manifest dự án:
+- `permissions`: `["cookies", "declarativeNetRequest", "storage"]`
+- `host_permissions`: `["https://*.facebook.com/*", "https://graph.facebook.com/*"]`
+- `declarative_net_request.rule_resources` trỏ về `dnr-rules.json`
+- `background.service_worker` + `background.type: "module"`
 
-2. **Register content scripts trong `manifest.json`:**
-```json
-{
-  "content_scripts": [
-    { "matches": ["https://*.facebook.com/*"], "js": ["content-bridge.js"], "run_at": "document_idle" },
-    { "matches": ["https://*.facebook.com/*"], "js": ["content-hook.js"], "run_at": "document_idle", "world": "MAIN" }
-  ],
-  "permissions": ["declarativeNetRequest", "scripting", "tabs", "cookies"],
-  "host_permissions": ["https://*.facebook.com/*", "https://graph.facebook.com/*"],
-  "declarative_net_request": {
-    "rule_resources": [{ "id": "spoof", "enabled": false, "path": "dnr-rules.json" }]
+**KHÔNG** cần `content_scripts` / `web_accessible_resources` cho use case bình thường.
+
+### Bước 3 — Gắn handler trong background.js
+```js
+import { fetchCredentials, checkFBSession, maskToken } from './background/get-creds.js';
+
+chrome.runtime.onMessage.addListener((msg, _sender, sendResp) => {
+  if (msg.type === 'GET_CREDS') {
+    fetchCredentials().then((creds) => {
+      console.log('[creds]', {
+        ...creds,
+        access_token: maskToken(creds.access_token),
+        fb_dtsg: maskToken(creds.fb_dtsg),
+      });
+      sendResp(creds);
+    });
+    return true;  // async
   }
-}
+});
 ```
 
-3. **Bật DNR spoof rules** trước khi gọi Graph API:
+### Bước 4 — Popup gọi
 ```js
-await chrome.declarativeNetRequest.updateEnabledRulesets({ enableRulesetIds: ['spoof'] });
+document.getElementById('btn-get').onclick = async () => {
+  const creds = await chrome.runtime.sendMessage({ type: 'GET_CREDS' });
+  if (creds._error === 'NOT_LOGGED_IN') {
+    alert('Mở facebook.com đăng nhập 1 lần rồi quay lại.');
+    return;
+  }
+  renderBundle(creds);  // hiển thị access_token, fb_dtsg, jazoest...
+};
 ```
 
-4. **Lấy credentials:**
+### Bước 5 — Validate + dùng
 ```js
-const [tab] = await chrome.tabs.query({ url: '*://*.facebook.com/*' });
-const { tokens } = await chrome.tabs.sendMessage(tab.id, { cmd: 'get-tokens' });
-// tokens = { access_token, fb_dtsg, jazoest, lsd, user_id, cookies }
-```
-
-5. **Validate token:**
-```js
-import { validateToken } from './validate-token.js';
-const { valid, id, name, error } = await validateToken(tokens.access_token);
+import { validateToken } from './lib/validate-token.js';
+const { valid, id, name, error } = await validateToken(creds.access_token);
 if (!valid) throw new Error('Token chết: ' + error);
+// Giờ dùng creds để gọi Graph API hoặc internal GraphQL
 ```
 
-6. **Gọi API:**
-   - Graph API → dùng `access_token` (truyền qua query string)
-   - Internal GraphQL → dùng `build-internal-headers.js` để gen headers
+## 🔍 Các credential trong bundle
+
+| Field | Nguồn gốc | Dùng cho |
+|---|---|---|
+| `access_token` | Regex EAA trong HTML từ business.facebook.com | Graph API chính thức |
+| `fb_dtsg` | `"DTSGInitialData"..."token":"..."` | CSRF cho internal endpoints |
+| `jazoest` | Compute local từ fb_dtsg (`"2" + sum(charCodes)`) | Integrity check kèm fb_dtsg |
+| `lsd` | `"LSD",[],{"token":"..."}` | Login State Data — một số endpoint bắt |
+| `user_id` | Cookie `c_user` hoặc `"USER_ID":"..."` trong HTML | Identify user |
+| `cookies` | `chrome.cookies.get({url,name})` cho c_user, xs, datr, sb, fr, presence | Giả lập session |
 
 ## 🔒 Bảo mật BẮT BUỘC
 
-1. **KHÔNG log full token** — chỉ show 6 ký tự cuối:
-   ```js
-   console.log('Token:', `EAA***${token.slice(-6)}`);
-   ```
+1. **KHÔNG log full token** — dùng `maskToken()` để chỉ show 4 đầu + 6 cuối
+2. **KHÔNG commit credentials vào git** — `.gitignore` đã loại `.fbtoken.json`, `.env`, `tokens.json`
+3. **KHÔNG gửi credentials ra server bên thứ 3** — nếu user yêu cầu, hỏi lại rõ HTTPS và domain
+4. **Rotate ngay** khi Graph trả code 190/102/463/467 → gọi lại `fetchCredentials()`
+5. **Mặc định in-memory** — không persist. Nếu buộc phải (ví dụ cron fetch), encrypt AES-GCM, KHÔNG plaintext
 
-2. **KHÔNG commit credentials vào git** — đã có `.gitignore` loại `.fbtoken.json`, `.env`
+## 🆘 Khi nào fallback sang MAIN-world content script?
 
-3. **KHÔNG gửi credentials ra ngoài** domain facebook.com/graph.facebook.com. Nếu
-   user hỏi "gửi token lên server X" → hỏi lại rõ server nào, HTTPS không.
+Cực hiếm — chỉ khi:
+- FB A/B test gỡ EAA inline khỏi **tất cả** URL trong danh sách fetch
+- Cần credential chính xác từ **session render thực tế** (ví dụ: GraphQL doc_id active cho 1 thao tác cụ thể)
 
-4. **Rotate ngay** khi:
-   - Error code 190 (token invalid)
-   - Error code 102 (session expired)
-   - Error code 463/467 (session changed)
-   → Trigger re-extract bằng cách gọi lại content-hook
-
-5. **Mặc định in-memory** — không persist credentials. Nếu buộc phải lưu (ví dụ
-   chạy background fetch), ENCRYPT bằng AES-GCM với key derive từ password user, KHÔNG plaintext.
+Khi đó tham khảo `reference/extraction-strategies.md` mục Strategy 2 và code từ
+`lexcom-lite/content-hook.js` gốc. Nhưng **đừng viết approach này mặc định** cho
+user — BG-fetch đã cover 99% use case.
 
 ## 📚 Đọc thêm khi cần sâu
 
 - **Format & regex detection** → `reference/credentials-overview.md`
-- **6 nguồn extraction** → `reference/extraction-sources.md`
-- **fb_dtsg / jazoest / lsd / cookies** → `reference/internal-creds.md`
+- **BG-fetch vs MAIN-world** → `reference/extraction-strategies.md`
 - **Tool X cần credential Y** → `reference/use-case-matrix.md`
 - **Error codes → hành động** → `reference/error-codes.md`
 
-## 📦 Templates sẵn dùng
-
-| File | Dùng cho | Copy vào |
-|---|---|---|
-| `templates/content-hook.js` | MV3 extension — extract credentials từ trang | `src/content-hook.js` |
-| `templates/content-bridge.js` | MV3 extension — relay bridge | `src/content-bridge.js` |
-| `templates/dnr-rules.json` | MV3 extension — spoof headers | `src/dnr-rules.json` |
-| `templates/validate-token.js` | Mọi project — check token live | `src/lib/validate-token.js` |
-| `templates/compute-jazoest.js` | Mọi project — derive từ fb_dtsg | `src/lib/compute-jazoest.js` |
-| `templates/build-internal-headers.js` | Mọi project — gen headers GraphQL | `src/lib/build-internal-headers.js` |
-| `templates/puppeteer-extract.js` | Node/Puppeteer — automate server-side | `scripts/puppeteer-extract.js` |
-
 ## ⚠️ Luôn nhắc user trước khi triển khai
 
-- Skill này chỉ dùng cho **tài khoản FB của chính user**, không phải account người
-  khác. FB chống scraping rất gắt, sai cách → ban account.
-- Internal endpoints (/api/graphql/, /ajax/) **KHÔNG có SLA** — FB đổi lúc nào
-  cũng được → tool cần có cơ chế auto-detect breaking change.
-- Rate limit: FB giới hạn ~200 req/giờ/user cho Graph API, nghiêm ngặt hơn với
-  internal. Luôn throttle + bisect khi gặp code 1/2/4/17/32/368/613.
+- Skill này chỉ dùng cho **tài khoản FB của chính user**. FB chống scraping gắt, sai cách → ban account.
+- Internal endpoints (/api/graphql/, /ajax/) **KHÔNG có SLA** — FB đổi lúc nào cũng được → tool cần auto-detect breaking change.
+- Rate limit: FB ~200 req/giờ/user cho Graph API, nghiêm hơn với internal. Luôn throttle + bisect khi gặp code 1/2/4/17/32/368/613.
 
 ## 🔗 Liên quan
 
-- **Skill `fb-get-ads-data`** (khi có): Dùng credentials từ skill này để fetch
-  danh sách TKQC, billing, insights, BM.
+- **Skill `fb-get-ads-data`** (khi có): Dùng credentials từ skill này để fetch TKQC, billing, insights, BM.

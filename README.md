@@ -9,7 +9,7 @@ phải giải thích lại từ đầu.
 
 | Skill | Trạng thái | Mô tả |
 |---|---|---|
-| [`get-via-access`](skills/get-via-access/) | ✅ v0.1.0 | Lấy full bundle credentials (access_token + fb_dtsg + jazoest + lsd + cookies) |
+| [`get-via-access`](skills/get-via-access/) | ✅ v0.2.0 | Lấy full bundle credentials qua **background-fetch** (user không cần mở tab FB) |
 | `fb-get-ads-data` | 🚧 Đang thiết kế | Fetch TKQC, billing, insights, BM qua Graph API + internal |
 
 ## Cài đặt — Windows
@@ -65,20 +65,18 @@ fb-skills/
 └── skills/
     └── get-via-access/               ← Skill 1
         ├── SKILL.md                  ← Main instructions cho Claude
-        ├── reference/                ← Knowledge base chi tiết
+        ├── reference/                ← Knowledge base
         │   ├── credentials-overview.md
-        │   ├── extraction-sources.md
-        │   ├── internal-creds.md
+        │   ├── extraction-strategies.md  ← BG-fetch (primary) vs MAIN-world (fallback)
         │   ├── use-case-matrix.md
         │   └── error-codes.md
         └── templates/                ← Code sẵn copy-paste vào project
-            ├── content-hook.js       ← MV3 MAIN world
-            ├── content-bridge.js     ← MV3 ISOLATED world bridge
-            ├── dnr-rules.json        ← Spoof headers
-            ├── validate-token.js     ← Check /me
-            ├── compute-jazoest.js    ← Derive từ fb_dtsg
-            ├── build-internal-headers.js ← Headers cho /api/graphql/
-            └── puppeteer-extract.js  ← Node bonus
+            ├── bg-fetch-credentials.js   ← ⭐ PRIMARY — background fetch + extract
+            ├── manifest-template.json    ← MV3 manifest chuẩn (permissions, DNR)
+            ├── dnr-rules.json            ← Spoof headers origin/referer
+            ├── compute-jazoest.js        ← Derive jazoest từ fb_dtsg
+            ├── validate-token.js         ← Check token live qua /me
+            └── build-internal-headers.js ← Headers cho /api/graphql/
 ```
 
 ## Cách dùng trong session Claude
@@ -112,9 +110,16 @@ Junction tự động thấy file mới — không cần reload Claude.
 
 ## Changelog
 
+### v0.2.0 — 2026-04-21
+- **Breaking:** Đổi default architecture sang **background-fetch** — user không cần mở tab FB
+- Thêm `templates/bg-fetch-credentials.js` (PRIMARY) + `templates/manifest-template.json`
+- Rewrite `SKILL.md`: dạy Claude ưu tiên BG-fetch, MAIN-world chỉ là fallback
+- Thêm `reference/extraction-strategies.md` so sánh 3 approach
+- Xoá `content-hook.js`, `content-bridge.js`, `puppeteer-extract.js`, `internal-creds.md`, `extraction-sources.md` (legacy)
+
 ### v0.1.0 — 2026-04-20
 - Khởi tạo repo
-- Skill `get-via-access`: extract full bundle (token + dtsg + jazoest + lsd + cookies)
+- Skill `get-via-access` phiên bản đầu (MAIN-world content script — đã deprecated)
 - 5 reference docs + 7 template files
 
 ### Roadmap

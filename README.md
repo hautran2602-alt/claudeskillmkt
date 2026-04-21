@@ -9,7 +9,7 @@ phải giải thích lại từ đầu.
 
 | Skill | Trạng thái | Mô tả |
 |---|---|---|
-| [`get-via-access`](skills/get-via-access/) | ✅ v0.2.0 | Lấy full bundle credentials qua **background-fetch** (user không cần mở tab FB) |
+| [`get-via-access`](skills/get-via-access/) | ✅ v1.0.0 | Lấy full bundle credentials qua **background-fetch** (user không cần mở tab FB) |
 | `fb-get-ads-data` | 🚧 Đang thiết kế | Fetch TKQC, billing, insights, BM qua Graph API + internal |
 
 ## Cài đặt — Windows
@@ -18,7 +18,7 @@ phải giải thích lại từ đầu.
 
 ```cmd
 cd D:\minhhaucode
-git clone https://github.com/hautran2602/fb-skills.git
+git clone https://github.com/hautran2602-alt/claudeskillmkt.git fb-skills
 ```
 
 ### 2. Tạo junction vào Claude global skills
@@ -51,7 +51,7 @@ dir "%USERPROFILE%\.claude\skills\get-via-access"
 
 ```bash
 cd ~/dev
-git clone https://github.com/hautran2602/fb-skills.git
+git clone https://github.com/hautran2602-alt/claudeskillmkt.git fb-skills
 mkdir -p ~/.claude/skills
 ln -s "$(pwd)/fb-skills/skills/get-via-access" ~/.claude/skills/get-via-access
 ```
@@ -110,6 +110,14 @@ Junction tự động thấy file mới — không cần reload Claude.
 
 ## Changelog
 
+### v1.0.0 — 2026-04-21 (stable)
+- **Stable release** — Đã verify end-to-end bằng extension test thực tế (Test-bg-fetch v1.1), full 6 credentials + validate < 10ms (cache hit)
+- Cải thiện `validate-token.js`: in-memory cache 60s TTL + timeout giảm 8s→5s + pattern fire-and-forget parallel validation
+- `dnr-rules.json`: thêm 2 rules cho `*.facebook.com` (BG-fetch) + `*.facebook.com/api/` (internal) — rule cũ chỉ có graph.facebook.com không đủ
+- Dọn `manifest-template.json`: xoá key `_comment`, `_removed_legacy_keys` (Chrome reject manifest có unknown keys)
+- `SKILL.md`: thêm section **Verification checklist trước khi bàn giao tool** (7 items) + cập nhật Bước 5 dạy pattern parallel validation + cache
+- `reference/error-codes.md`: sửa legacy "Re-trigger content-hook" → pattern chuẩn `fetchCredentials()` + `clearValidationCache()`
+
 ### v0.2.0 — 2026-04-21
 - **Breaking:** Đổi default architecture sang **background-fetch** — user không cần mở tab FB
 - Thêm `templates/bg-fetch-credentials.js` (PRIMARY) + `templates/manifest-template.json`
@@ -123,9 +131,9 @@ Junction tự động thấy file mới — không cần reload Claude.
 - 5 reference docs + 7 template files
 
 ### Roadmap
-- **v0.2.0** — Skill `fb-get-ads-data` (fetch TKQC, billing, insights, BM)
-- **v0.3.0** — Skill `fb-data-sync` (incremental sync, localStorage merge)
-- **v0.4.0** — Skill `fb-tool-scaffold` (generate project mới từ template)
+- **v1.1.0** — Skill `fb-get-ads-data` (fetch TKQC, billing, insights, BM — port từ lexcom-lite)
+- **v1.2.0** — Skill `fb-data-sync` (incremental sync, localStorage merge, broadcast channel)
+- **v1.3.0** — Skill `fb-tool-scaffold` (generate project extension FB mới từ template)
 
 ## Đóng góp
 

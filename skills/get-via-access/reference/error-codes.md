@@ -18,10 +18,13 @@ Bảng sau giúp tool quyết định hành động ngay lập tức.
 
 **Hành động chuẩn cho nhóm này:**
 ```js
+import { fetchCredentials } from './background/get-creds.js';
+import { clearValidationCache } from './lib/validate-token.js';
+
 if (error.code === 190 || error.code === 102) {
-  invalidateTokens();  // Clear cache
-  const fresh = await extractCredentials();  // Re-trigger content-hook
-  retry(fresh);
+  clearValidationCache();                // Clear cached "valid" state
+  const fresh = await fetchCredentials({ includeCookies: true });  // Re-extract
+  return retry(fresh);
 }
 ```
 

@@ -84,11 +84,30 @@ document.getElementById('btn-get').onclick = async () => {
 ```
 
 ### Bước 5 — Validate + dùng
+
+Pattern chuẩn: gọi **song song** với `fetchCredentials()` (fire-and-forget),
+không đợi — khi user click "Validate" thì result đã ở cache:
+
 ```js
-import { validateToken } from './lib/validate-token.js';
-const { valid, id, name, error } = await validateToken(creds.access_token);
-if (!valid) throw new Error('Token chết: ' + error);
-// Giờ dùng creds để gọi Graph API hoặc internal GraphQL
+import { validateToken, clearValidationCache } from './lib/validate-token.js';
+
+// Sau fetchCredentials xong:
+if (creds.access_token) {
+  // Fire-and-forget — không await
+  validateToken(creds.access_token, { fields: 'id', timeout: 5000 })
+    .then((r) => pushToPopup({ type: 'VALIDATION_UPDATE', data: r }));
+}
+
+// Khi user bấm "Validate", hàm tự trả cache (60s TTL) → gần như instant
+const r = await validateToken(creds.access_token);  // 0ms nếu cache hit
+if (!r.valid) {
+  if (r.code === 190) {
+    clearValidationCache();
+    const fresh = await fetchCredentials();  // rotate
+    // retry...
+  }
+  throw new Error('Token chết: ' + r.error);
+}
 ```
 
 ## 🔍 Các credential trong bundle
@@ -116,9 +135,19 @@ Cực hiếm — chỉ khi:
 - FB A/B test gỡ EAA inline khỏi **tất cả** URL trong danh sách fetch
 - Cần credential chính xác từ **session render thực tế** (ví dụ: GraphQL doc_id active cho 1 thao tác cụ thể)
 
-Khi đó tham khảo `reference/extraction-strategies.md` mục Strategy 2 và code từ
-`lexcom-lite/content-hook.js` gốc. Nhưng **đừng viết approach này mặc định** cho
-user — BG-fetch đã cover 99% use case.
+Khi đó tham khảo `reference/extraction-strategies.md` mục Strategy 2 — dùng
+content-script MAIN-world với `require('DTSGInitData')` / `require('LSD')`.
+Nhưng **đừng viết approach này mặc định** cho user — BG-fetch đã cover 99% use case.
+
+## ✅ Verification checklist trước khi bàn giao tool
+
+1. `manifest.json` có `"type": "module"` trong `background`
+2. `permissions` bao gồm `"cookies"`, `"declarativeNetRequest"`
+3. `host_permissions` cover `*.facebook.com` + `graph.facebook.com`
+4. `dnr-rules.json` có **3 rules**: graph.facebook.com + *.facebook.com + *.facebook.com/api/
+5. Test thực tế: cài extension → **KHÔNG mở tab FB** → click "Lấy credentials" → thấy đủ EAA + fb_dtsg + lsd + user_id + ≥5 cookies
+6. Click "Validate token" sau khi lấy — phải < 10ms (cache hit)
+7. `maskToken()` áp dụng cho mọi log output
 
 ## 📚 Đọc thêm khi cần sâu
 

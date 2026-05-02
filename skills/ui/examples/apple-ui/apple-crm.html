@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LexCRM — Apple Liquid Glass</title>
+<style>
+/* ── SKILL: apple-ui (Liquid Glass / iOS 26 / macOS Tahoe) ── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* System Colors */
+  --c-blue: #0A84FF;   --c-blue-soft: #DBEBFF;
+  --c-green: #30D158;  --c-green-soft: #D6F5DD;
+  --c-red: #FF453A;    --c-red-soft: #FFD9D6;
+  --c-orange: #FF9F0A; --c-orange-soft: #FFE9CC;
+  --c-yellow: #FFD60A; --c-yellow-soft: #FFF4C2;
+  --c-purple: #BF5AF2; --c-purple-soft: #EFD8FB;
+  --c-pink: #FF375F;   --c-pink-soft: #FFD3DD;
+  --c-teal: #64D2FF;   --c-teal-soft: #D8F2FF;
+  --c-indigo: #5E5CE6; --c-indigo-soft: #DDDCFA;
+  --c-mint: #66D4CF;   --c-mint-soft: #DAF4F2;
+
+  /* Backgrounds */
+  --bg-primary: #fff;
+  --bg-secondary: #F5F5F7;
+  --bg-canvas: #EFEFF4;
+
+  /* Labels */
+  --label-primary:    rgba(0,0,0,0.88);
+  --label-secondary:  rgba(60,60,67,0.62);
+  --label-tertiary:   rgba(60,60,67,0.32);
+
+  /* Gray scale */
+  --gray-1: #8E8E93; --gray-2: #AEAEB2;
+  --gray-3: #C7C7CC; --gray-4: #D1D1D6;
+  --gray-5: #E5E5EA; --gray-6: #F2F2F7;
+
+  /* Glass materials */
+  --glass-thin:    rgba(255,255,255,0.45);
+  --blur-thin:     blur(40px) saturate(180%) brightness(110%);
+  --glass-regular: rgba(255,255,255,0.55);
+  --blur-regular:  blur(50px) saturate(180%) brightness(110%);
+  --glass-thick:   rgba(255,255,255,0.72);
+  --blur-thick:    blur(60px) saturate(190%) brightness(112%);
+
+  /* Glass specular edge shadow */
+  --glass-edge:
+    inset 0 0.5px 0 rgba(255,255,255,0.75),
+    inset 0 0 0 0.5px rgba(255,255,255,0.30);
+  --glass-float:   0 8px 32px rgba(0,0,0,0.08);
+  --glass-modal:   0 24px 64px rgba(0,0,0,0.18);
+
+  /* Radius — concentric */
+  --r-sm: 10px; --r-md: 14px; --r-lg: 22px;
+  --r-xl: 28px; --r-full: 9999px;
+
+  /* Layout */
+  --inset: 16px;
+  --sidebar-w: 252px;
+  --toolbar-h: 52px;
+
+  /* Easing */
+  --ease-apple:  cubic-bezier(0.16,1,0.3,1);
+  --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1C1C1E; --bg-secondary: #2C2C2E; --bg-canvas: #0A0A0C;
+    --label-primary: rgba(255,255,255,0.92);
+    --label-secondary: rgba(235,235,245,0.65);
+    --label-tertiary: rgba(235,235,245,0.32);
+    --glass-thin:    rgba(36,36,38,0.50);
+    --glass-regular: rgba(36,36,38,0.60);
+    --glass-thick:   rgba(36,36,38,0.78);
+    --glass-edge:
+      inset 0 0.5px 0 rgba(255,255,255,0.15),
+      inset 0 0 0 0.5px rgba(255,255,255,0.08);
+    --glass-float: 0 8px 32px rgba(0,0,0,0.4);
+  }
+}
+
+/* ── BASE ── */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(ellipse at 0% 0%,   rgba(10,132,255,0.20) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(255,55,95,0.18)  0%, transparent 55%),
+    radial-gradient(ellipse at 60% 40%,  rgba(191,90,242,0.12) 0%, transparent 40%),
+    var(--bg-canvas);
+  min-height: 100vh;
+  color: var(--label-primary);
+  font-variant-numeric: tabular-nums;
+}
+button { cursor: pointer; font-family: inherit; border: none; }
+input, select, textarea { font-family: inherit; outline: none; }
+
+/* ── LAYOUT ── */
+.app { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: var(--inset); bottom: var(--inset); left: var(--inset);
+  width: var(--sidebar-w);
+  background: var(--glass-regular);
+  backdrop-filter: var(--blur-regular);
+  -webkit-backdrop-filter: var(--blur-regular);
+  border-radius: var(--r-lg);
+  box-shadow: var(--glass-edge), var(--glass-float);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  padding: 18px 16px 14px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  background: var(--c-blue);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.4), 0 3px 8px rgba(10,132,255,0.35);
+}
+.logo-icon svg { width: 18px; height: 18px; color: white; }
+.logo-text { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+.logo-text em { color: var(--c-blue); font-style: normal; }
+
+.sidebar-nav { flex: 1; padding: 10px 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.nav-section {
+  font-size: 11px; font-weight: 600;
+  color: var(--label-tertiary);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 12px 8px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  font-size: 14px; font-weight: 500;
+  color: var(--label-primary);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  user-select: none;
+}
+.nav-item:hover { background: rgba(0,0,0,0.04); }
+.nav-item.active { background: var(--c-blue); color: white; box-shadow: 0 4px 12px rgba(10,132,255,0.3); }
+.nav-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--c-blue); }
+.nav-item.active .nav-icon { color: white; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--c-red);
+  color: white;
+  font-size: 11px; font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 9999px;
+}
+
+.sidebar-user {
+  padding: 12px;
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+}
+.user-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.user-row:hover { background: rgba(0,0,0,0.04); }
+.avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c-purple), var(--c-pink));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 13px; font-weight: 600; flex-shrink: 0;
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.5);
+}
+.avatar-sm {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 11px; font-weight: 600; flex-shrink: 0;
+}
+.user-name { font-size: 14px; font-weight: 600; }
+.user-role { font-size: 11px; color: var(--label-secondary); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: calc(var(--sidebar-w) + var(--inset) * 2);
+  flex: 1;
+  padding: var(--inset);
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+/* ── TOOLBAR ── */
+.toolbar {
+  background: var(--glass-thin);
+  backdrop-filter: var(--blur-thin);
+  -webkit-backdrop-filter: var(--blur-thin);
+  border-radius: var(--r-lg);
+  height: var(--toolbar-h);
+  padding: 0 14px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--glass-edge), var(--glass-float);
+  position: sticky; top: var(--inset); z-index: 50;
+}
+.page-title { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; flex: 1; }
+.page-sub { font-size: 13px; color: var(--label-secondary); font-weight: 400; margin-left: 6px; }
+
+.search {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(120,120,128,0.14);
+  border-radius: 9999px;
+  padding: 6px 12px; width: 240px;
+  transition: all 0.25s var(--ease-apple);
+}
+.search:focus-within {
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 0 4px rgba(10,132,255,0.18);
+}
+.search svg { width: 14px; height: 14px; color: var(--label-secondary); flex-shrink: 0; }
+.search input { flex: 1; border: none; background: transparent; font-size: 13px; color: var(--label-primary); }
+.search input::placeholder { color: var(--label-tertiary); }
+
+.icon-btn {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: rgba(120,120,128,0.10);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--label-secondary);
+  transition: all 0.15s;
+  position: relative;
+}
+.icon-btn:hover { background: rgba(120,120,128,0.18); color: var(--label-primary); }
+.icon-btn svg { width: 17px; height: 17px; }
+.badge-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--c-red); border: 1.5px solid rgba(255,255,255,0.8);
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 8px 16px; border-radius: var(--r-md);
+  font-size: 14px; font-weight: 600; border: none; cursor: pointer;
+  transition: all 0.2s var(--ease-apple);
+}
+.btn svg { width: 14px; height: 14px; }
+.btn:active { transform: scale(0.96); }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+
+.btn-fill { background: var(--c-blue); color: white; box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.4), 0 4px 12px rgba(10,132,255,0.3); }
+.btn-fill:hover { filter: brightness(1.08); }
+.btn-fill.green { background: var(--c-green); box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.4), 0 4px 12px rgba(48,209,88,0.3); }
+.btn-fill.red   { background: var(--c-red);   box-shadow: 0 4px 12px rgba(255,69,58,0.3); }
+.btn-tint { background: var(--c-blue-soft); color: var(--c-blue); }
+.btn-plain { background: transparent; color: var(--c-blue); border-radius: var(--r-sm); }
+.btn-plain:hover { background: rgba(10,132,255,0.08); }
+.btn-glass {
+  background: var(--glass-thin);
+  backdrop-filter: var(--blur-thin);
+  color: var(--label-primary);
+  box-shadow: var(--glass-edge);
+}
+.btn-glass:hover { background: rgba(255,255,255,0.6); }
+
+/* ── PAGES ── */
+.page { display: none; animation: fadeUp 0.3s var(--ease-apple); }
+.page.active { display: contents; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── STATS GRID ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 12px;
+}
+.stat-card {
+  background: var(--glass-regular);
+  backdrop-filter: var(--blur-regular);
+  -webkit-backdrop-filter: var(--blur-regular);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  box-shadow: var(--glass-edge), var(--glass-float);
+  display: flex; flex-direction: column; gap: 10px;
+  transition: transform 0.25s var(--ease-apple);
+  cursor: default;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--glass-edge), 0 14px 40px rgba(0,0,0,0.11); }
+.stat-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.stat-icon svg { width: 18px; height: 18px; color: white; }
+.stat-label { font-size: 12px; font-weight: 500; color: var(--label-secondary); }
+.stat-value { font-size: 28px; font-weight: 700; letter-spacing: -0.4px; line-height: 1; }
+.stat-trend { font-size: 12px; font-weight: 500; }
+.up { color: var(--c-green); } .down { color: var(--c-red); }
+
+/* ── GLASS CARD ── */
+.g-card {
+  background: var(--glass-regular);
+  backdrop-filter: var(--blur-regular);
+  -webkit-backdrop-filter: var(--blur-regular);
+  border-radius: var(--r-lg);
+  box-shadow: var(--glass-edge), var(--glass-float);
+  overflow: hidden;
+}
+.g-card-header {
+  padding: 14px 18px;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
+  display: flex; align-items: center; gap: 10px;
+}
+.card-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.card-icon svg { width: 15px; height: 15px; color: white; }
+.card-title { font-size: 15px; font-weight: 700; }
+.card-sub   { font-size: 12px; color: var(--label-secondary); }
+.card-actions { margin-left: auto; display: flex; gap: 6px; }
+.g-card-body  { padding: 16px 18px; }
+
+/* ── TWO-COL GRID ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.span2  { grid-column: 1 / -1; }
+@media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* ── CHART BARS ── */
+.chart-wrap { display: flex; align-items: flex-end; gap: 6px; height: 100px; padding: 0 2px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar { width: 100%; border-radius: 5px 5px 0 0; background: var(--c-blue); opacity: 0.7; transition: opacity 0.2s; min-height: 3px; }
+.bar:hover { opacity: 1; }
+.bar-label { font-size: 10px; color: var(--label-tertiary); font-weight: 500; }
+.bar-active { opacity: 1 !important; box-shadow: 0 0 0 3px rgba(10,132,255,0.25); }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: rgba(0,0,0,0.025); }
+th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--label-secondary); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+td { padding: 12px 16px; border-bottom: 0.5px solid rgba(0,0,0,0.05); vertical-align: middle; font-size: 14px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(10,132,255,0.03); }
+.td-r { text-align: right; }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 9px; border-radius: 9999px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+}
+.badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.b-blue   { background: var(--c-blue-soft);   color: var(--c-blue); }
+.b-green  { background: var(--c-green-soft);  color: #1a7a3a; }
+.b-red    { background: var(--c-red-soft);    color: #c0392b; }
+.b-orange { background: var(--c-orange-soft); color: #b35900; }
+.b-purple { background: var(--c-purple-soft); color: #7b2fbe; }
+.b-teal   { background: var(--c-teal-soft);   color: #1a7a99; }
+.b-indigo { background: var(--c-indigo-soft); color: #3c3ab3; }
+.b-mint   { background: var(--c-mint-soft);   color: #1a8a87; }
+
+/* ── PROGRESS ── */
+.prog-wrap { background: rgba(120,120,128,0.15); border-radius: 9999px; height: 5px; }
+.prog { height: 100%; border-radius: 9999px; }
+.prog.lo  { background: var(--c-blue); }
+.prog.mid { background: var(--c-orange); }
+.prog.hi  { background: var(--c-red); }
+
+/* ── ACTIVITY LIST ── */
+.activity { display: flex; flex-direction: column; }
+.act-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid rgba(0,0,0,0.05); }
+.act-item:last-child { border-bottom: none; }
+.act-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.act-dot svg { width: 13px; height: 13px; color: white; }
+.act-text { font-size: 13px; font-weight: 500; line-height: 1.4; color: var(--label-primary); }
+.act-text strong { font-weight: 700; }
+.act-time { font-size: 11px; color: var(--label-tertiary); margin-top: 3px; }
+
+/* ── PIPELINE / KANBAN ── */
+.kanban { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+.k-col {
+  min-width: 260px;
+  background: var(--glass-thin);
+  backdrop-filter: var(--blur-thin);
+  -webkit-backdrop-filter: var(--blur-thin);
+  border-radius: var(--r-lg);
+  padding: 12px;
+  box-shadow: var(--glass-edge), var(--glass-float);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.k-col-head {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 700; padding-bottom: 4px;
+}
+.k-dot { width: 8px; height: 8px; border-radius: 50%; }
+.k-count {
+  margin-left: auto;
+  background: rgba(0,0,0,0.06);
+  border-radius: 9999px;
+  padding: 1px 7px;
+  font-size: 11px; color: var(--label-secondary);
+}
+.deal-card {
+  background: var(--glass-thick);
+  backdrop-filter: var(--blur-thick);
+  -webkit-backdrop-filter: var(--blur-thick);
+  border-radius: var(--r-md);
+  padding: 12px;
+  box-shadow: var(--glass-edge), 0 2px 8px rgba(0,0,0,0.06);
+  cursor: pointer;
+  transition: all 0.22s var(--ease-apple);
+}
+.deal-card:hover { transform: translateY(-2px); box-shadow: var(--glass-edge), 0 8px 24px rgba(0,0,0,0.10); }
+.deal-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.deal-co   { font-size: 12px; color: var(--label-secondary); margin-bottom: 8px; }
+.deal-footer { display: flex; align-items: center; justify-content: space-between; }
+.deal-val { font-size: 15px; font-weight: 700; color: var(--c-blue); }
+.deal-due { font-size: 11px; color: var(--label-tertiary); }
+.k-add { border: 1.5px dashed rgba(0,0,0,0.12); background: transparent; border-radius: 12px; padding: 8px; width: 100%; font-size: 13px; color: var(--label-secondary); cursor: pointer; transition: all 0.15s; }
+.k-add:hover { background: rgba(0,0,0,0.03); }
+
+/* ── CUSTOMER DETAIL ── */
+.detail-grid { display: grid; grid-template-columns: 280px 1fr; gap: 12px; }
+@media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
+.profile-card { align-self: start; }
+.profile-body { padding: 24px 20px 18px; text-align: center; }
+.profile-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c-purple), var(--c-blue));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 24px; font-weight: 700;
+  margin: 0 auto 14px;
+  box-shadow: inset 0 0.5px 0 rgba(255,255,255,0.5), 0 6px 20px rgba(191,90,242,0.3);
+}
+.profile-name { font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+.profile-role { font-size: 13px; color: var(--label-secondary); margin: 4px 0 12px; }
+.profile-stats { display: grid; grid-template-columns: 1fr 1fr; border-top: 0.5px solid rgba(0,0,0,0.06); }
+.pstat { padding: 14px; text-align: center; border-right: 0.5px solid rgba(0,0,0,0.06); border-bottom: 0.5px solid rgba(0,0,0,0.06); }
+.pstat:nth-child(2n) { border-right: none; }
+.pstat:nth-child(3), .pstat:nth-child(4) { border-bottom: none; }
+.pstat-val { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.pstat-lbl { font-size: 10px; color: var(--label-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 3px; }
+.profile-info { padding: 14px 16px; border-top: 0.5px solid rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 10px; }
+.info-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.info-row svg { width: 14px; height: 14px; color: var(--label-tertiary); flex-shrink: 0; }
+
+/* ── REPORT ── */
+.report-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+@media (max-width: 900px) { .report-grid { grid-template-columns: 1fr; } }
+
+.donut-legend { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.leg-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.leg-val { margin-left: auto; font-weight: 700; }
+
+/* ── SETTINGS ── */
+.list-group { border-radius: 14px; overflow: hidden; box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.06); }
+.list-row {
+  min-height: 44px; padding: 12px 16px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 0.5px solid rgba(0,0,0,0.05);
+  background: var(--glass-thin);
+  backdrop-filter: var(--blur-thin);
+  cursor: pointer; transition: background 0.15s;
+}
+.list-row:last-child { border-bottom: none; }
+.list-row:hover { background: rgba(255,255,255,0.7); }
+.list-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.list-icon svg { width: 14px; height: 14px; color: white; }
+.list-label { flex: 1; font-size: 15px; font-weight: 500; }
+.list-val   { font-size: 14px; color: var(--label-secondary); }
+.list-chev  { font-size: 13px; color: var(--label-tertiary); }
+
+/* ── TOGGLE ── */
+.toggle { appearance: none; width: 51px; height: 31px; background: rgba(120,120,128,0.32); border-radius: 9999px; position: relative; cursor: pointer; transition: background 0.3s var(--ease-apple); flex-shrink: 0; }
+.toggle:checked { background: var(--c-green); }
+.toggle::before { content: ''; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; background: white; border-radius: 50%; box-shadow: 0 3px 8px rgba(0,0,0,0.15); transition: transform 0.35s var(--ease-spring); }
+.toggle:checked::before { transform: translateX(20px); }
+
+/* ── FORM ── */
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 13px; font-weight: 600; color: var(--label-primary); }
+.form-input {
+  padding: 10px 12px; border-radius: 10px; border: 0.5px solid rgba(0,0,0,0.12);
+  background: rgba(255,255,255,0.7); font-size: 15px; color: var(--label-primary);
+  transition: all 0.2s;
+}
+.form-input:focus { border-color: var(--c-blue); box-shadow: 0 0 0 4px rgba(10,132,255,0.18); background: white; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 300;
+  align-items: flex-end; justify-content: center;
+  padding: 0;
+  animation: fadeIn 0.3s var(--ease-apple);
+}
+.modal-overlay.open { display: flex; }
+@media (min-width: 640px) { .modal-overlay { align-items: center; padding: var(--inset); } }
+.modal {
+  background: var(--glass-thick);
+  backdrop-filter: var(--blur-thick);
+  -webkit-backdrop-filter: var(--blur-thick);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  width: 100%; max-width: 520px;
+  box-shadow: var(--glass-edge), var(--glass-modal);
+  animation: slideUp 0.45s var(--ease-apple);
+}
+@media (min-width: 640px) { .modal { border-radius: var(--r-xl); } }
+.modal-handle { width: 36px; height: 5px; background: rgba(120,120,128,0.38); border-radius: 9999px; margin: 10px auto 14px; }
+.modal-head { padding: 0 20px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 0.5px solid rgba(0,0,0,0.06); }
+.modal-title { font-size: 17px; font-weight: 700; }
+.modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+.modal-foot { padding: 14px 20px; border-top: 0.5px solid rgba(0,0,0,0.06); display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ── TOAST ── */
+.toast-container { position: fixed; top: var(--inset); left: 50%; transform: translateX(-50%); z-index: 400; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast {
+  background: var(--glass-thick);
+  backdrop-filter: var(--blur-thick);
+  border-radius: 16px;
+  padding: 11px 16px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--glass-edge), 0 16px 40px rgba(0,0,0,0.15);
+  font-size: 14px; font-weight: 600;
+  animation: slideDown 0.45s var(--ease-apple);
+  white-space: nowrap;
+}
+.toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+@keyframes slideDown { from { transform: translate(-50%,-120%); opacity:0; } to { transform: translate(-50%,0); opacity:1; } }
+@keyframes slideUp { from { transform: translateY(100%); opacity:0.6; } to { transform: translateY(0); opacity:1; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+/* ── SEGMENTED CONTROL ── */
+.seg { display: inline-flex; background: rgba(120,120,128,0.14); border-radius: 11px; padding: 2px; }
+.seg-item { padding: 5px 14px; font-size: 13px; font-weight: 500; border: none; background: transparent; border-radius: 9px; color: var(--label-primary); cursor: pointer; transition: all 0.2s ease; }
+.seg-item.active { background: white; box-shadow: 0 3px 8px rgba(0,0,0,0.10), inset 0 0.5px 0 rgba(255,255,255,0.9); }
+
+/* ── PAGINATION ── */
+.pagination { padding: 12px 16px; border-top: 0.5px solid rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
+.pag-info { font-size: 13px; color: var(--label-secondary); }
+.pag-btns { display: flex; gap: 4px; }
+.pag-btn { padding: 5px 10px; border-radius: 8px; border: none; background: transparent; font-size: 13px; font-weight: 500; color: var(--label-secondary); cursor: pointer; transition: all 0.15s; }
+.pag-btn:hover { background: rgba(0,0,0,0.05); }
+.pag-btn.active { background: var(--c-blue); color: white; }
+
+/* ── EMPTY STATE ── */
+.empty { text-align: center; padding: 60px 20px; }
+.empty svg { width: 60px; height: 60px; color: var(--label-tertiary); margin-bottom: 14px; }
+.empty-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.empty-desc { font-size: 14px; color: var(--label-secondary); max-width: 300px; margin: 0 auto; }
+
+/* ── TOOLBAR FILTER ── */
+.filter-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.filter-select { padding: 7px 12px; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 10px; background: rgba(255,255,255,0.65); backdrop-filter: blur(10px); font-size: 13px; color: var(--label-primary); cursor: pointer; }
+.filter-select:focus { border-color: var(--c-blue); outline: none; }
+.filter-spacer { flex: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      </div>
+      <div class="logo-text">Lex<em>CRM</em></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">Chính</div>
+
+      <div class="nav-item active" onclick="nav(this,'dashboard')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+        Tổng quan
+      </div>
+      <div class="nav-item" onclick="nav(this,'customers')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Khách hàng
+        <span class="nav-badge">248</span>
+      </div>
+      <div class="nav-item" onclick="nav(this,'pipeline')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        Pipeline
+      </div>
+
+      <div class="nav-section">Phân tích</div>
+      <div class="nav-item" onclick="nav(this,'reports')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+        Báo cáo
+      </div>
+
+      <div class="nav-section">Hệ thống</div>
+      <div class="nav-item" onclick="nav(this,'settings')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Cài đặt
+      </div>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-row">
+        <div class="avatar">TH</div>
+        <div>
+          <div class="user-name">Trần Minh Hậu</div>
+          <div class="user-role">Sales Manager</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="page-title" id="ptitle">Tổng quan <span class="page-sub" id="psub">Xin chào, Hậu 👋</span></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input placeholder="Tìm kiếm…">
+      </div>
+      <button class="icon-btn" title="Thông báo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="badge-dot"></span>
+      </button>
+      <button class="btn btn-fill btn-sm" onclick="openModal('add-customer')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Thêm mới
+      </button>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="pg-dashboard">
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--c-blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          <div class="stat-label">Tổng khách hàng</div>
+          <div class="stat-value">2,481</div>
+          <div class="stat-trend up">▲ +12% so với T4</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--c-green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div class="stat-label">Doanh thu T5/2026</div>
+          <div class="stat-value">₫4.82B</div>
+          <div class="stat-trend up">▲ +8.4% vs T4</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--c-purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
+          <div class="stat-label">Deals đang mở</div>
+          <div class="stat-value">143</div>
+          <div class="stat-trend up">▲ +23 tuần này</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--c-orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg></div>
+          <div class="stat-label">Tỉ lệ chuyển đổi</div>
+          <div class="stat-value">34.7%</div>
+          <div class="stat-trend down">▼ -2.1% vs T4</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <!-- Revenue chart -->
+        <div class="g-card">
+          <div class="g-card-header">
+            <div class="card-icon" style="background:var(--c-blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg></div>
+            <div><div class="card-title">Doanh thu 7 tháng</div><div class="card-sub">Đơn vị: tỷ đồng</div></div>
+          </div>
+          <div class="g-card-body">
+            <div class="chart-wrap">
+              <div class="bar-col"><div class="bar" style="height:52%"></div><div class="bar-label">T11</div></div>
+              <div class="bar-col"><div class="bar" style="height:68%"></div><div class="bar-label">T12</div></div>
+              <div class="bar-col"><div class="bar" style="height:44%"></div><div class="bar-label">T1</div></div>
+              <div class="bar-col"><div class="bar" style="height:60%"></div><div class="bar-label">T2</div></div>
+              <div class="bar-col"><div class="bar" style="height:80%"></div><div class="bar-label">T3</div></div>
+              <div class="bar-col"><div class="bar" style="height:73%"></div><div class="bar-label">T4</div></div>
+              <div class="bar-col"><div class="bar bar-active" style="height:92%"></div><div class="bar-label" style="color:var(--c-blue);font-weight:700">T5</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="g-card">
+          <div class="g-card-header">
+            <div class="card-icon" style="background:var(--c-purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div><div class="card-title">Hoạt động gần đây</div></div>
+          </div>
+          <div class="g-card-body" style="padding:0 16px">
+            <div class="activity">
+              <div class="act-item">
+                <div class="act-dot" style="background:var(--c-green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div><div class="act-text"><strong>Nguyễn Thành Long</strong> ký HĐ ₫280M</div><div class="act-time">5 phút trước</div></div>
+              </div>
+              <div class="act-item">
+                <div class="act-dot" style="background:var(--c-blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                <div><div class="act-text">Khách mới <strong>Phạm Thị Hoa</strong> (Cty ABC)</div><div class="act-time">23 phút trước</div></div>
+              </div>
+              <div class="act-item">
+                <div class="act-dot" style="background:var(--c-orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
+                <div><div class="act-text">Deal <strong>#DL-2047</strong> quá hạn 2 ngày</div><div class="act-time">1 giờ trước</div></div>
+              </div>
+              <div class="act-item">
+                <div class="act-dot" style="background:var(--c-teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+                <div><div class="act-text"><strong>Lê Văn Tùng</strong> phản hồi báo giá</div><div class="act-time">2 giờ trước</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top deals table -->
+        <div class="g-card span2">
+          <div class="g-card-header">
+            <div class="card-icon" style="background:var(--c-orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+            <div><div class="card-title">Deals tiềm năng nhất</div><div class="card-sub">Tháng 5/2026</div></div>
+            <div class="card-actions"><button class="btn btn-plain btn-sm">Xem tất cả</button></div>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Tên deal</th><th>Khách hàng</th><th>Giai đoạn</th><th class="td-r">Giá trị</th><th>Xác suất</th><th>Phụ trách</th><th class="td-r">Kỳ vọng</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Enterprise Cloud Suite</strong></td><td>Tập đoàn Vingroup</td>
+                  <td><span class="badge b-purple">Demo</span></td>
+                  <td class="td-r" style="font-weight:700">₫1.2B</td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="prog-wrap" style="width:80px"><div class="prog mid" style="width:70%"></div></div><span style="font-size:11px;color:var(--label-secondary)">70%</span></div></td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar-sm" style="background:var(--c-purple);width:22px;height:22px;font-size:9px">TH</div>Trần Hậu</div></td>
+                  <td class="td-r" style="color:var(--c-blue);font-weight:700">₫840M</td>
+                </tr>
+                <tr>
+                  <td><strong>Marketing Platform Pro</strong></td><td>Masan Consumer</td>
+                  <td><span class="badge b-orange">Đề xuất</span></td>
+                  <td class="td-r" style="font-weight:700">₫850M</td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="prog-wrap" style="width:80px"><div class="prog lo" style="width:55%"></div></div><span style="font-size:11px;color:var(--label-secondary)">55%</span></div></td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar-sm" style="background:var(--c-green);width:22px;height:22px;font-size:9px">NL</div>Nguyễn Linh</div></td>
+                  <td class="td-r" style="color:var(--c-blue);font-weight:700">₫467M</td>
+                </tr>
+                <tr>
+                  <td><strong>Data Analytics Bundle</strong></td><td>FPT Software</td>
+                  <td><span class="badge b-teal">Thương lượng</span></td>
+                  <td class="td-r" style="font-weight:700">₫620M</td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="prog-wrap" style="width:80px"><div class="prog hi" style="width:92%"></div></div><span style="font-size:11px;color:var(--label-secondary)">92%</span></div></td>
+                  <td><div style="display:flex;align-items:center;gap:6px"><div class="avatar-sm" style="background:var(--c-orange);width:22px;height:22px;font-size:9px">PT</div>Phạm Tuấn</div></td>
+                  <td class="td-r" style="color:var(--c-blue);font-weight:700">₫570M</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CUSTOMERS ── -->
+    <div class="page" id="pg-customers">
+      <div class="filter-row">
+        <select class="filter-select"><option>Tất cả phân khúc</option><option>Enterprise</option><option>SMB</option><option>Startup</option></select>
+        <select class="filter-select"><option>Tất cả trạng thái</option><option>Hoạt động</option><option>Tiềm năng</option><option>Không HĐ</option></select>
+        <select class="filter-select"><option>Mới nhất</option><option>Doanh thu</option><option>Tên A-Z</option></select>
+        <div class="filter-spacer"></div>
+        <button class="btn btn-glass btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Xuất Excel</button>
+        <button class="btn btn-fill btn-sm" onclick="openModal('add-customer')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Thêm khách hàng
+        </button>
+      </div>
+      <div class="g-card">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th><input type="checkbox"></th><th>Khách hàng</th><th>Công ty</th><th>Phân khúc</th><th>Trạng thái</th><th>Deals</th><th class="td-r">Doanh thu YTD</th><th>Phụ trách</th><th></th></tr></thead>
+            <tbody>
+              <tr style="cursor:pointer" onclick="nav(document.querySelector('[onclick*=detail]'),'detail')">
+                <td><input type="checkbox" onclick="e=event,e.stopPropagation()"></td>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar-sm" style="background:var(--c-blue);width:30px;height:30px;font-size:11px">NL</div><div><div style="font-weight:600;font-size:14px">Nguyễn Thị Lan</div><div style="font-size:11px;color:var(--label-secondary)">lan.nguyen@vingroup.vn</div></div></div></td>
+                <td>Tập đoàn Vingroup</td>
+                <td><span class="badge b-indigo">Enterprise</span></td>
+                <td><span class="badge b-green"><span class="badge-dot"></span>Hoạt động</span></td>
+                <td style="text-align:center;font-weight:700">4</td>
+                <td class="td-r" style="font-weight:700">₫2.4B</td>
+                <td><div class="avatar-sm" style="background:var(--c-purple);width:26px;height:26px;font-size:10px">TH</div></td>
+                <td><button class="btn btn-plain btn-sm" onclick="event.stopPropagation();nav(null,'detail')">Chi tiết</button></td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar-sm" style="background:var(--c-green);width:30px;height:30px;font-size:11px">PT</div><div><div style="font-weight:600;font-size:14px">Phạm Văn Tuấn</div><div style="font-size:11px;color:var(--label-secondary)">tuan.pham@fpt.com.vn</div></div></div></td>
+                <td>FPT Software</td>
+                <td><span class="badge b-indigo">Enterprise</span></td>
+                <td><span class="badge b-green"><span class="badge-dot"></span>Hoạt động</span></td>
+                <td style="text-align:center;font-weight:700">2</td>
+                <td class="td-r" style="font-weight:700">₫1.8B</td>
+                <td><div class="avatar-sm" style="background:var(--c-orange);width:26px;height:26px;font-size:10px">PT</div></td>
+                <td><button class="btn btn-plain btn-sm" onclick="nav(null,'detail')">Chi tiết</button></td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar-sm" style="background:var(--c-orange);width:30px;height:30px;font-size:11px">LT</div><div><div style="font-weight:600;font-size:14px">Lê Thị Thu</div><div style="font-size:11px;color:var(--label-secondary)">thu.le@masan.vn</div></div></div></td>
+                <td>Masan Consumer</td>
+                <td><span class="badge b-teal">SMB</span></td>
+                <td><span class="badge b-orange"><span class="badge-dot"></span>Tiềm năng</span></td>
+                <td style="text-align:center;font-weight:700">1</td>
+                <td class="td-r" style="font-weight:700">₫850M</td>
+                <td><div class="avatar-sm" style="background:var(--c-teal);width:26px;height:26px;font-size:10px">NL</div></td>
+                <td><button class="btn btn-plain btn-sm" onclick="nav(null,'detail')">Chi tiết</button></td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar-sm" style="background:var(--c-pink);width:30px;height:30px;font-size:11px">HM</div><div><div style="font-weight:600;font-size:14px">Hoàng Minh</div><div style="font-size:11px;color:var(--label-secondary)">minh@techvn.io</div></div></div></td>
+                <td>TechVN Startup</td>
+                <td><span class="badge b-mint">Startup</span></td>
+                <td><span class="badge b-red"><span class="badge-dot"></span>Không HĐ</span></td>
+                <td style="text-align:center;color:var(--label-tertiary)">0</td>
+                <td class="td-r" style="font-weight:700">₫45M</td>
+                <td><div class="avatar-sm" style="background:var(--c-red);width:26px;height:26px;font-size:10px">LT</div></td>
+                <td><button class="btn btn-plain btn-sm" onclick="nav(null,'detail')">Chi tiết</button></td>
+              </tr>
+              <tr style="cursor:pointer">
+                <td><input type="checkbox" onclick="event.stopPropagation()"></td>
+                <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar-sm" style="background:var(--c-teal);width:30px;height:30px;font-size:11px">BT</div><div><div style="font-weight:600;font-size:14px">Bùi Thị Thanh</div><div style="font-size:11px;color:var(--label-secondary)">thanh@viettel.vn</div></div></div></td>
+                <td>Viettel Group</td>
+                <td><span class="badge b-indigo">Enterprise</span></td>
+                <td><span class="badge b-green"><span class="badge-dot"></span>Hoạt động</span></td>
+                <td style="text-align:center;font-weight:700">3</td>
+                <td class="td-r" style="font-weight:700">₫3.1B</td>
+                <td><div class="avatar-sm" style="background:var(--c-green);width:26px;height:26px;font-size:10px">NT</div></td>
+                <td><button class="btn btn-plain btn-sm" onclick="nav(null,'detail')">Chi tiết</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span class="pag-info">1–5 / 2,481 khách hàng</span>
+          <div class="pag-btns">
+            <button class="pag-btn">‹</button>
+            <button class="pag-btn active">1</button>
+            <button class="pag-btn">2</button>
+            <button class="pag-btn">3</button>
+            <button class="pag-btn">…</button>
+            <button class="pag-btn">496</button>
+            <button class="pag-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DETAIL ── -->
+    <div class="page" id="pg-detail">
+      <div style="margin-bottom:12px">
+        <button class="btn btn-plain btn-sm" onclick="nav(null,'customers')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><polyline points="15 18 9 12 15 6"/></svg>
+          Quay lại
+        </button>
+      </div>
+      <div class="detail-grid">
+        <div class="g-card profile-card">
+          <div class="profile-body">
+            <div class="profile-avatar">NL</div>
+            <div class="profile-name">Nguyễn Thị Lan</div>
+            <div class="profile-role">Director of Technology · Tập đoàn Vingroup</div>
+            <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap">
+              <span class="badge b-indigo">Enterprise</span>
+              <span class="badge b-green"><span class="badge-dot"></span>Hoạt động</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:16px">
+              <button class="btn btn-fill btn-sm" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Nhắn tin</button>
+              <button class="btn btn-glass btn-sm" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.13a19.79 19.79 0 01-3.07-8.67A2 2 0 012.18 0h3a2 2 0 012 1.72"/></svg>Gọi</button>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="pstat"><div class="pstat-val" style="color:var(--c-blue)">₫2.4B</div><div class="pstat-lbl">Doanh thu</div></div>
+            <div class="pstat"><div class="pstat-val" style="color:var(--c-green)">4</div><div class="pstat-lbl">Deals mở</div></div>
+            <div class="pstat"><div class="pstat-val" style="color:var(--c-purple)">12</div><div class="pstat-lbl">Giao dịch</div></div>
+            <div class="pstat"><div class="pstat-val" style="color:var(--c-orange)">92%</div><div class="pstat-lbl">Hài lòng</div></div>
+          </div>
+          <div class="profile-info">
+            <div class="info-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>lan.nguyen@vingroup.vn</div>
+            <div class="info-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07"/><path d="M16.73 3.13a4 4 0 012.07 1.87"/></svg>+84 903 123 456</div>
+            <div class="info-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>72 Trần Hưng Đạo, Q.1, TP.HCM</div>
+            <div class="info-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Khách từ: 15/03/2022</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="g-card">
+            <div class="g-card-header">
+              <div class="card-icon" style="background:var(--c-purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
+              <div><div class="card-title">Deals hiện tại</div><div class="card-sub">4 deals đang mở</div></div>
+              <div class="card-actions"><button class="btn btn-fill btn-sm">+ Deal mới</button></div>
+            </div>
+            <div class="tbl-wrap">
+              <table><tbody>
+                <tr><td><div style="font-weight:600;font-size:14px">Enterprise Cloud Suite</div><div style="font-size:11px;color:var(--label-tertiary);font-family:monospace">#DL-2041</div></td><td><span class="badge b-purple">Demo</span></td><td class="td-r" style="font-weight:700">₫1.2B</td><td class="td-r"><div class="prog-wrap" style="width:70px"><div class="prog mid" style="width:70%"></div></div></td></tr>
+                <tr><td><div style="font-weight:600;font-size:14px">Support Premium 2yr</div><div style="font-size:11px;color:var(--label-tertiary);font-family:monospace">#DL-2038</div></td><td><span class="badge b-green">Đã ký</span></td><td class="td-r" style="font-weight:700">₫420M</td><td class="td-r"><div class="prog-wrap" style="width:70px"><div class="prog hi" style="width:100%"></div></div></td></tr>
+                <tr><td><div style="font-weight:600;font-size:14px">Analytics Add-on</div><div style="font-size:11px;color:var(--label-tertiary);font-family:monospace">#DL-2056</div></td><td><span class="badge b-orange">Đề xuất</span></td><td class="td-r" style="font-weight:700">₫280M</td><td class="td-r"><div class="prog-wrap" style="width:70px"><div class="prog lo" style="width:40%"></div></div></td></tr>
+              </tbody></table>
+            </div>
+          </div>
+
+          <div class="g-card">
+            <div class="g-card-header">
+              <div class="card-icon" style="background:var(--c-teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div><div class="card-title">Ghi chú & Hoạt động</div></div>
+              <div class="card-actions"><button class="btn btn-glass btn-sm">+ Ghi chú</button></div>
+            </div>
+            <div class="g-card-body" style="padding:0 16px">
+              <div class="activity">
+                <div class="act-item"><div class="act-dot" style="background:var(--c-blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div><div class="act-text">Họp demo Cloud Suite. Khách ấn tượng tính năng realtime sync. Báo giá tuần sau.</div><div class="act-time">29/04/2026 · 10:30 · Trần Hậu</div></div></div>
+                <div class="act-item"><div class="act-dot" style="background:var(--c-green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="act-text">HĐ Support Premium 2 năm đã ký. Onboarding từ 01/05/2026.</div><div class="act-time">25/04/2026 · 15:00 · Trần Hậu</div></div></div>
+                <div class="act-item"><div class="act-dot" style="background:var(--c-orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2"/></svg></div><div><div class="act-text">Gọi tư vấn Analytics Add-on. Cần thêm case study ngành bán lẻ.</div><div class="act-time">20/04/2026 · 09:15 · Nguyễn Linh</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PIPELINE ── -->
+    <div class="page" id="pg-pipeline">
+      <div class="filter-row" style="margin-bottom:14px">
+        <select class="filter-select"><option>Tất cả NV</option><option>Trần Hậu</option><option>Nguyễn Linh</option></select>
+        <select class="filter-select"><option>Tháng 5/2026</option></select>
+        <div class="filter-spacer"></div>
+        <button class="btn btn-fill btn-sm" onclick="openModal('add-deal')">+ Deal mới</button>
+      </div>
+      <div class="kanban">
+        <div class="k-col">
+          <div class="k-col-head"><div class="k-dot" style="background:var(--c-teal)"></div>Tiếp cận<span class="k-count">32</span></div>
+          <div class="deal-card"><div class="deal-name">CRM Implementation</div><div class="deal-co">Techcombank</div><span class="badge b-teal" style="margin-bottom:8px;display:inline-flex">Mới</span><div class="deal-footer"><div class="deal-val">₫380M</div><div class="deal-due">15/05</div></div></div>
+          <div class="deal-card"><div class="deal-name">Digital Transform</div><div class="deal-co">Saigon Co.op</div><span class="badge b-teal" style="margin-bottom:8px;display:inline-flex">Mới</span><div class="deal-footer"><div class="deal-val">₫520M</div><div class="deal-due">20/05</div></div></div>
+          <button class="k-add">+ Thêm deal</button>
+        </div>
+        <div class="k-col">
+          <div class="k-col-head"><div class="k-dot" style="background:var(--c-orange)"></div>Đề xuất<span class="k-count">28</span></div>
+          <div class="deal-card"><div class="deal-name">Marketing Platform Pro</div><div class="deal-co">Masan Consumer</div><span class="badge b-orange" style="margin-bottom:8px;display:inline-flex">Chờ PH</span><div class="deal-footer"><div class="deal-val" style="color:var(--c-orange)">₫850M</div><div class="deal-due" style="color:var(--c-red)">Quá hạn 2N</div></div></div>
+          <button class="k-add">+ Thêm deal</button>
+        </div>
+        <div class="k-col">
+          <div class="k-col-head"><div class="k-dot" style="background:var(--c-purple)"></div>Demo<span class="k-count">19</span></div>
+          <div class="deal-card"><div class="deal-name">Enterprise Cloud Suite</div><div class="deal-co">Tập đoàn Vingroup</div><span class="badge b-purple" style="margin-bottom:8px;display:inline-flex">Demo T5</span><div class="deal-footer"><div class="deal-val" style="color:var(--c-purple)">₫1.2B</div><div class="deal-due">07/05</div></div></div>
+          <div class="deal-card"><div class="deal-name">HR Management</div><div class="deal-co">Vietnam Airlines</div><span class="badge b-purple" style="margin-bottom:8px;display:inline-flex">Lên lịch</span><div class="deal-footer"><div class="deal-val" style="color:var(--c-purple)">₫680M</div><div class="deal-due">12/05</div></div></div>
+          <button class="k-add">+ Thêm deal</button>
+        </div>
+        <div class="k-col">
+          <div class="k-col-head"><div class="k-dot" style="background:var(--c-pink)"></div>Thương lượng<span class="k-count">15</span></div>
+          <div class="deal-card"><div class="deal-name">Data Analytics Bundle</div><div class="deal-co">FPT Software</div><span class="badge b-pink" style="margin-bottom:8px;display:inline-flex">Giá cuối</span><div class="deal-footer"><div class="deal-val" style="color:var(--c-pink)">₫620M</div><div class="deal-due">03/05</div></div></div>
+          <button class="k-add">+ Thêm deal</button>
+        </div>
+        <div class="k-col">
+          <div class="k-col-head"><div class="k-dot" style="background:var(--c-green)"></div>Đã ký<span class="k-count">49</span></div>
+          <div class="deal-card"><div class="deal-name">Support Premium 2yr</div><div class="deal-co">Vingroup</div><span class="badge b-green" style="margin-bottom:8px;display:inline-flex">✓ Hoàn thành</span><div class="deal-footer"><div class="deal-val" style="color:var(--c-green)">₫420M</div><div class="deal-due">Ký 25/04</div></div></div>
+          <div class="deal-card"><div class="deal-name">ERP Renewal 2026</div><div class="deal-co">Viettel Group</div><span class="badge b-green" style="margin-bottom:8px;display:inline-flex">✓ Hoàn thành</span><div class="deal-footer"><div class="deal-val" style="color:var(--c-green)">₫1.8B</div><div class="deal-due">Ký 22/04</div></div></div>
+          <button class="k-add">+ Thêm deal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── REPORTS ── -->
+    <div class="page" id="pg-reports">
+      <div class="stats-grid" style="margin-bottom:12px">
+        <div class="stat-card"><div class="stat-icon" style="background:var(--c-green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div><div class="stat-label">Tăng trưởng DT</div><div class="stat-value">+8.4%</div><div class="stat-trend up">▲ vs T4</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:var(--c-blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="stat-label">Khách mới T5</div><div class="stat-value">127</div><div class="stat-trend up">▲ +14 vs T4</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:var(--c-orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="stat-label">TG chốt deal TB</div><div class="stat-value">18 ngày</div><div class="stat-trend up">▲ -3N vs T4</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:var(--c-purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="stat-label">NPS Score</div><div class="stat-value">78</div><div class="stat-trend up">▲ +5 vs T4</div></div>
+      </div>
+      <div class="report-grid">
+        <div class="g-card">
+          <div class="g-card-header">
+            <div class="card-icon" style="background:var(--c-blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg></div>
+            <div><div class="card-title">Doanh thu 12 tháng</div><div class="card-sub">Đơn vị: tỷ đồng</div></div>
+          </div>
+          <div class="g-card-body">
+            <div class="chart-wrap" style="height:130px">
+              <div class="bar-col"><div class="bar" style="height:38%"></div><div class="bar-label">T6</div></div>
+              <div class="bar-col"><div class="bar" style="height:54%"></div><div class="bar-label">T7</div></div>
+              <div class="bar-col"><div class="bar" style="height:47%"></div><div class="bar-label">T8</div></div>
+              <div class="bar-col"><div class="bar" style="height:60%"></div><div class="bar-label">T9</div></div>
+              <div class="bar-col"><div class="bar" style="height:70%"></div><div class="bar-label">T10</div></div>
+              <div class="bar-col"><div class="bar" style="height:50%"></div><div class="bar-label">T11</div></div>
+              <div class="bar-col"><div class="bar" style="height:86%"></div><div class="bar-label">T12</div></div>
+              <div class="bar-col"><div class="bar" style="height:43%"></div><div class="bar-label">T1</div></div>
+              <div class="bar-col"><div class="bar" style="height:58%"></div><div class="bar-label">T2</div></div>
+              <div class="bar-col"><div class="bar" style="height:76%"></div><div class="bar-label">T3</div></div>
+              <div class="bar-col"><div class="bar" style="height:73%"></div><div class="bar-label">T4</div></div>
+              <div class="bar-col"><div class="bar bar-active" style="height:92%"></div><div class="bar-label" style="color:var(--c-blue);font-weight:700">T5</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="g-card">
+          <div class="g-card-header">
+            <div class="card-icon" style="background:var(--c-purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></div>
+            <div><div class="card-title">Phân khúc KH</div></div>
+          </div>
+          <div class="g-card-body">
+            <div style="display:flex;justify-content:center">
+              <svg width="110" height="110" viewBox="0 0 110 110">
+                <circle cx="55" cy="55" r="45" fill="none" stroke="var(--gray-5)" stroke-width="18"/>
+                <circle cx="55" cy="55" r="45" fill="none" stroke="var(--c-blue)" stroke-width="18" stroke-dasharray="141 283" stroke-dashoffset="0" transform="rotate(-90 55 55)"/>
+                <circle cx="55" cy="55" r="45" fill="none" stroke="var(--c-purple)" stroke-width="18" stroke-dasharray="85 283" stroke-dashoffset="-141" transform="rotate(-90 55 55)"/>
+                <circle cx="55" cy="55" r="45" fill="none" stroke="var(--c-teal)" stroke-width="18" stroke-dasharray="57 283" stroke-dashoffset="-226" transform="rotate(-90 55 55)"/>
+                <circle cx="55" cy="55" r="28" fill="var(--bg-secondary)"/>
+                <text x="55" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="var(--label-primary)">2,481</text>
+                <text x="55" y="70" text-anchor="middle" font-size="9" fill="var(--label-tertiary)">KH</text>
+              </svg>
+            </div>
+            <div class="donut-legend">
+              <div class="leg-item"><div class="leg-dot" style="background:var(--c-blue)"></div>Enterprise<div class="leg-val">1,240 <span style="color:var(--label-tertiary);font-weight:400">(50%)</span></div></div>
+              <div class="leg-item"><div class="leg-dot" style="background:var(--c-purple)"></div>SMB<div class="leg-val">744 <span style="color:var(--label-tertiary);font-weight:400">(30%)</span></div></div>
+              <div class="leg-item"><div class="leg-dot" style="background:var(--c-teal)"></div>Startup<div class="leg-val">497 <span style="color:var(--label-tertiary);font-weight:400">(20%)</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="page" id="pg-settings">
+      <div style="max-width:600px;display:flex;flex-direction:column;gap:20px">
+        <div class="g-card">
+          <div class="g-card-header">
+            <div class="card-icon" style="background:var(--c-purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div><div class="card-title">Thông tin cá nhân</div></div>
+          </div>
+          <div class="g-card-body" style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;gap:16px">
+              <div class="avatar" style="width:58px;height:58px;font-size:20px;background:linear-gradient(135deg,var(--c-purple),var(--c-pink))">TH</div>
+              <button class="btn btn-glass btn-sm">Thay ảnh</button>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Họ và tên</label><input class="form-input" value="Trần Minh Hậu"></div>
+              <div class="form-group"><label class="form-label">Chức vụ</label><input class="form-input" value="Sales Manager"></div>
+              <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="hau.tran@lexcom.vn" type="email"></div>
+              <div class="form-group"><label class="form-label">Điện thoại</label><input class="form-input" value="+84 903 456 789"></div>
+            </div>
+            <button class="btn btn-fill" style="align-self:flex-start" onclick="toast('Đã lưu thành công','green')">Lưu thay đổi</button>
+          </div>
+        </div>
+
+        <div class="g-card">
+          <div class="g-card-header">
+            <div class="card-icon" style="background:var(--c-orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+            <div><div class="card-title">Thông báo</div></div>
+          </div>
+          <div class="list-group" style="margin:0 16px 16px">
+            <div class="list-row"><div class="list-icon" style="background:var(--c-blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div><div class="list-label">Deal mới được phân công</div><input type="toggle" class="toggle" checked></div>
+            <div class="list-row"><div class="list-icon" style="background:var(--c-red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="list-label">Deal sắp đến hạn</div><input type="toggle" class="toggle" checked></div>
+            <div class="list-row"><div class="list-icon" style="background:var(--c-green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/></svg></div><div class="list-label">Báo cáo hàng tuần qua email</div><input type="toggle" class="toggle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-add-customer" onclick="if(event.target===this)closeModal('add-customer')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="card-icon" style="background:var(--c-blue);width:28px;height:28px;border-radius:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;color:white"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div class="modal-title">Thêm khách hàng mới</div>
+      <button class="btn btn-plain btn-sm" style="margin-left:auto;color:var(--label-secondary)" onclick="closeModal('add-customer')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Họ và tên *</label><input class="form-input" placeholder="Nguyễn Văn A"></div>
+        <div class="form-group"><label class="form-label">Email *</label><input class="form-input" type="email" placeholder="email@company.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Số điện thoại</label><input class="form-input" placeholder="+84 xxx xxx xxx"></div>
+        <div class="form-group"><label class="form-label">Công ty</label><input class="form-input" placeholder="Tên công ty"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Phân khúc</label><select class="form-input"><option>Enterprise</option><option>SMB</option><option>Startup</option></select></div>
+        <div class="form-group"><label class="form-label">Phụ trách</label><select class="form-input"><option>Trần Minh Hậu</option><option>Nguyễn Thị Linh</option><option>Phạm Văn Tuấn</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">Ghi chú</label><textarea class="form-input" rows="2" placeholder="Thông tin bổ sung…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-glass" onclick="closeModal('add-customer')">Hủy</button>
+      <button class="btn btn-fill" onclick="closeModal('add-customer');toast('Đã thêm khách hàng mới!','green')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><polyline points="20 6 9 17 4 12"/></svg>
+        Lưu khách hàng
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-deal" onclick="if(event.target===this)closeModal('add-deal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="card-icon" style="background:var(--c-purple);width:28px;height:28px;border-radius:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px;color:white"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
+      <div class="modal-title">Thêm Deal mới</div>
+      <button class="btn btn-plain btn-sm" style="margin-left:auto;color:var(--label-secondary)" onclick="closeModal('add-deal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Tên Deal *</label><input class="form-input" placeholder="VD: Enterprise Cloud Package"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Khách hàng *</label><input class="form-input" placeholder="Tìm khách hàng…"></div>
+        <div class="form-group"><label class="form-label">Giá trị (VNĐ)</label><input class="form-input" type="number" placeholder="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Giai đoạn</label><select class="form-input"><option>Tiếp cận</option><option>Đề xuất</option><option>Demo</option><option>Thương lượng</option><option>Đã ký</option></select></div>
+        <div class="form-group"><label class="form-label">Ngày đóng</label><input class="form-input" type="date"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-glass" onclick="closeModal('add-deal')">Hủy</button>
+      <button class="btn btn-fill green" onclick="closeModal('add-deal');toast('Deal mới đã được tạo!','green')">Tạo Deal</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="tc"></div>
+
+<script>
+const titles = {
+  dashboard: ['Tổng quan','Xin chào, Hậu 👋'],
+  customers:  ['Khách hàng','2,481 khách hàng'],
+  detail:     ['Chi tiết khách hàng','Nguyễn Thị Lan · Vingroup'],
+  pipeline:   ['Pipeline','143 deals đang mở · ₫18.4B kỳ vọng'],
+  reports:    ['Báo cáo','Tháng 5/2026'],
+  settings:   ['Cài đặt','Hệ thống'],
+};
+
+function nav(el, id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('pg-' + id)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const [t, s] = titles[id] || ['',''];
+  document.getElementById('ptitle').innerHTML = t + ' <span class="page-sub">' + s + '</span>';
+}
+
+function openModal(id)  { document.getElementById('modal-' + id).classList.add('open'); }
+function closeModal(id) { document.getElementById('modal-' + id).classList.remove('open'); }
+
+function toast(msg, color) {
+  const tc = document.getElementById('tc');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  const c = color === 'green' ? 'var(--c-green)' : 'var(--c-red)';
+  const icon = color === 'green'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>';
+  el.innerHTML = `<span style="color:${c}">${icon}</span><span>${msg}</span>`;
+  tc.appendChild(el);
+  setTimeout(() => { el.style.transition = 'opacity 0.3s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 3000);
+}
+</script>
+</body>
+</html>

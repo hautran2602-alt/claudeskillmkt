@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AdOps CRM</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar glass-regular" aria-label="Điều hướng CRM">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M4 12.3c0-4.2 3.4-7.6 7.6-7.6h.8c4.2 0 7.6 3.4 7.6 7.6v.2c0 4.2-3.4 7.6-7.6 7.6h-.8C7.4 20.1 4 16.7 4 12.5v-.2Z" />
+              <path d="M8.5 13.5 11 8h2l2.5 5.5m-5.9-1.3h4.8M8 16.2h8" />
+            </svg>
+          </div>
+          <div>
+            <strong>AdOps CRM</strong>
+            <span>Quản lý TKQC</span>
+          </div>
+        </div>
+
+        <nav class="nav-stack">
+          <p class="sidebar-section">Tổng quan</p>
+          <a class="sidebar-row active" href="#">
+            <span class="nav-icon blue"></span>
+            Dashboard
+          </a>
+          <a class="sidebar-row" href="#">
+            <span class="nav-icon green"></span>
+            Khách hàng
+          </a>
+          <a class="sidebar-row" href="#">
+            <span class="nav-icon purple"></span>
+            TKQC
+          </a>
+          <a class="sidebar-row" href="#">
+            <span class="nav-icon orange"></span>
+            Chi tiêu
+          </a>
+          <a class="sidebar-row" href="#">
+            <span class="nav-icon red"></span>
+            Cảnh báo
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <span class="live-dot"></span>
+          18 tài khoản đang đồng bộ
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="toolbar glass-thin">
+          <div class="mobile-brand">
+            <div class="brand-mark small" aria-hidden="true">
+              <svg viewBox="0 0 24 24" role="img">
+                <path d="M4 12.3c0-4.2 3.4-7.6 7.6-7.6h.8c4.2 0 7.6 3.4 7.6 7.6v.2c0 4.2-3.4 7.6-7.6 7.6h-.8C7.4 20.1 4 16.7 4 12.5v-.2Z" />
+                <path d="M8.5 13.5 11 8h2l2.5 5.5m-5.9-1.3h4.8M8 16.2h8" />
+              </svg>
+            </div>
+            <span>AdOps</span>
+          </div>
+
+          <label class="search" aria-label="Tìm kiếm">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m21 21-4.35-4.35m1.35-5.15a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
+            </svg>
+            <input type="search" placeholder="Tìm khách hàng, TKQC..." />
+          </label>
+
+          <div class="segmented" aria-label="Bộ lọc thời gian">
+            <button class="seg-item active" type="button">Hôm nay</button>
+            <button class="seg-item" type="button">7 ngày</button>
+            <button class="seg-item" type="button">Tháng</button>
+          </div>
+
+          <button class="btn-glass" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Thêm khách hàng
+          </button>
+
+          <div class="avatar" aria-label="Tài khoản HM">HM</div>
+        </header>
+
+        <section class="page-heading" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow">Trung tâm vận hành quảng cáo</p>
+            <h1 id="page-title">CRM Khách hàng &amp; TKQC</h1>
+          </div>
+          <div class="sync-pill">
+            <span class="live-dot"></span>
+            Cập nhật 09:42
+          </div>
+        </section>
+
+        <section class="stats-grid" aria-label="Chỉ số nhanh">
+          <article class="stat-card glass-regular">
+            <div class="stat-top">
+              <div class="stat-icon blue">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M16 11a4 4 0 1 0-8 0m8 0a4 4 0 1 1-8 0m8 0h1.5A3.5 3.5 0 0 1 21 14.5V18M8 11H6.5A3.5 3.5 0 0 0 3 14.5V18m4.5-1h9" />
+                </svg>
+              </div>
+              <span class="trend up">+12%</span>
+            </div>
+            <p class="stat-label">Khách hàng</p>
+            <strong class="stat-value">128</strong>
+          </article>
+
+          <article class="stat-card glass-regular">
+            <div class="stat-top">
+              <div class="stat-icon green">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 19V5h14v14H5Zm4-4V9m3 6v-3m3 3V8" />
+                </svg>
+              </div>
+              <span class="trend stable">Ổn định</span>
+            </div>
+            <p class="stat-label">TKQC active</p>
+            <strong class="stat-value">342</strong>
+          </article>
+
+          <article class="stat-card glass-regular">
+            <div class="stat-top">
+              <div class="stat-icon orange">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h16v10H4V7Zm3 3h4m5 4h1M7 14h5" />
+                </svg>
+              </div>
+              <span class="trend down">-3%</span>
+            </div>
+            <p class="stat-label">Ngân sách hôm nay</p>
+            <strong class="stat-value">248,6tr</strong>
+          </article>
+
+          <article class="stat-card glass-regular">
+            <div class="stat-top">
+              <div class="stat-icon red">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3 2.8 19h18.4L12 3Zm0 5.5v5m0 3h.01" />
+                </svg>
+              </div>
+              <span class="trend alert">Cần xử lý</span>
+            </div>
+            <p class="stat-label">Cảnh báo thanh toán</p>
+            <strong class="stat-value">9</strong>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <section class="table-panel glass-regular" aria-labelledby="table-title">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Pipeline vận hành</p>
+                <h2 id="table-title">Khách hàng &amp; tài khoản quảng cáo</h2>
+              </div>
+              <button class="btn-plain" type="button">Xuất báo cáo</button>
+            </div>
+
+            <div class="data-table" role="table" aria-label="Danh sách khách hàng và TKQC">
+              <div class="table-row table-head" role="row">
+                <span role="columnheader">Khách hàng</span>
+                <span role="columnheader">TKQC</span>
+                <span role="columnheader">Trạng thái</span>
+                <span role="columnheader">Ngân sách</span>
+                <span role="columnheader">Spend</span>
+                <span role="columnheader">Owner</span>
+              </div>
+
+              <div class="table-row selected" role="row">
+                <span class="client-cell" role="cell" data-label="Khách hàng">
+                  <span class="client-logo mint">LP</span>
+                  <span>
+                    <strong>Lotus Prime</strong>
+                    <small>Ecommerce mỹ phẩm</small>
+                  </span>
+                </span>
+                <span role="cell" data-label="TKQC">BM-2481 / 12 active</span>
+                <span role="cell" data-label="Trạng thái"><span class="badge success">Tốt</span></span>
+                <span class="numeric" role="cell" data-label="Ngân sách">68,0tr</span>
+                <span class="numeric" role="cell" data-label="Spend">41,2tr</span>
+                <span role="cell" data-label="Owner">Minh Hà</span>
+              </div>
+
+              <div class="table-row" role="row">
+                <span class="client-cell" role="cell" data-label="Khách hàng">
+                  <span class="client-logo blue">NS</span>
+                  <span>
+                    <strong>NorthStar Edu</strong>
+                    <small>Lead gen khóa học</small>
+                  </span>
+                </span>
+                <span role="cell" data-label="TKQC">BM-1190 / 8 active</span>
+                <span role="cell" data-label="Trạng thái"><span class="badge warning">Sắp hết tiền</span></span>
+                <span class="numeric" role="cell" data-label="Ngân sách">34,5tr</span>
+                <span class="numeric" role="cell" data-label="Spend">31,8tr</span>
+                <span role="cell" data-label="Owner">Quang Anh</span>
+              </div>
+
+              <div class="table-row" role="row">
+                <span class="client-cell" role="cell" data-label="Khách hàng">
+                  <span class="client-logo purple">HV</span>
+                  <span>
+                    <strong>Horizon Villas</strong>
+                    <small>Bất động sản nghỉ dưỡng</small>
+                  </span>
+                </span>
+                <span role="cell" data-label="TKQC">BM-7822 / 5 active</span>
+                <span role="cell" data-label="Trạng thái"><span class="badge error">Payment hold</span></span>
+                <span class="numeric" role="cell" data-label="Ngân sách">52,0tr</span>
+                <span class="numeric" role="cell" data-label="Spend">18,7tr</span>
+                <span role="cell" data-label="Owner">Lan Chi</span>
+              </div>
+
+              <div class="table-row" role="row">
+                <span class="client-cell" role="cell" data-label="Khách hàng">
+                  <span class="client-logo orange">BM</span>
+                  <span>
+                    <strong>Bloom Mart</strong>
+                    <small>Retail đa ngành</small>
+                  </span>
+                </span>
+                <span role="cell" data-label="TKQC">BM-9044 / 17 active</span>
+                <span role="cell" data-label="Trạng thái"><span class="badge success">Tăng trưởng</span></span>
+                <span class="numeric" role="cell" data-label="Ngân sách">94,0tr</span>
+                <span class="numeric" role="cell" data-label="Spend">72,5tr</span>
+                <span role="cell" data-label="Owner">Minh Hà</span>
+              </div>
+            </div>
+          </section>
+
+          <aside class="detail-panel glass-regular" aria-labelledby="detail-title">
+            <div class="detail-hero">
+              <div class="client-logo large mint">LP</div>
+              <div>
+                <p class="eyebrow">Khách hàng đang chọn</p>
+                <h2 id="detail-title">Lotus Prime</h2>
+                <span class="badge success">Thanh toán ổn định</span>
+              </div>
+            </div>
+
+            <div class="metric-list">
+              <div class="metric-row">
+                <span>TKQC hoạt động</span>
+                <strong class="numeric">12 / 15</strong>
+              </div>
+              <div class="metric-row">
+                <span>Hạn mức còn lại</span>
+                <strong class="numeric">126,8tr</strong>
+              </div>
+              <div class="metric-row">
+                <span>Spend hôm nay</span>
+                <strong class="numeric">41,2tr</strong>
+              </div>
+              <div class="metric-row">
+                <span>ROAS trung bình</span>
+                <strong class="numeric">4.82x</strong>
+              </div>
+            </div>
+
+            <div class="account-stack">
+              <div class="mini-account">
+                <span class="status-dot ok"></span>
+                <div>
+                  <strong>LP Scale 01</strong>
+                  <small>Daily cap 18,0tr</small>
+                </div>
+                <span class="numeric">87%</span>
+              </div>
+              <div class="mini-account">
+                <span class="status-dot watch"></span>
+                <div>
+                  <strong>LP Retargeting</strong>
+                  <small>Learning limited</small>
+                </div>
+                <span class="numeric">62%</span>
+              </div>
+              <div class="mini-account">
+                <span class="status-dot ok"></span>
+                <div>
+                  <strong>LP Catalog</strong>
+                  <small>ROAS 6.1x</small>
+                </div>
+                <span class="numeric">44%</span>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <nav class="tab-bar glass-thin" aria-label="Điều hướng nhanh">
+      <a class="tab-item active" href="#">
+        <span class="tab-symbol dashboard"></span>
+        Dashboard
+      </a>
+      <a class="tab-item" href="#">
+        <span class="tab-symbol clients"></span>
+        Khách hàng
+      </a>
+      <a class="tab-item" href="#">
+        <span class="tab-symbol accounts"></span>
+        TKQC
+      </a>
+      <a class="tab-item" href="#">
+        <span class="tab-symbol alerts"></span>
+        Cảnh báo
+      </a>
+    </nav>
+  </body>
+</html>
